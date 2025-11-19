@@ -23,6 +23,9 @@ def pdf_to_images(pdf_path, output_folder="output_images", image_format="png", d
     Path(output_folder).mkdir(parents=True, exist_ok=True)
     print(f"图片将保存到: {os.path.abspath(output_folder)}")
 
+    # 获取原PDF文件名（不含扩展名）
+    pdf_basename = os.path.splitext(os.path.basename(pdf_path))[0]
+
     # 打开PDF文件
     pdf_document = fitz.open(pdf_path)
     total_pages = pdf_document.page_count
@@ -46,8 +49,8 @@ def pdf_to_images(pdf_path, output_folder="output_images", image_format="png", d
         if image_format.lower() == "jpg" or image_format.lower() == "jpeg":
             img = img.convert("RGB")
 
-        # 构建输出文件名，例如: output_images/page_001.png
-        output_filename = f"page_{page_num + 1:03d}.{image_format.lower()}"
+        # 构建输出文件名，格式为：原文件名_页码.格式（例如：example_1.png）
+        output_filename = f"{pdf_basename}_{page_num + 1}.{image_format.lower()}"
         output_path = os.path.join(output_folder, output_filename)
         
         # 保存图片
@@ -97,6 +100,5 @@ if __name__ == "__main__":
     pdf_to_images(pdf_path, output_folder, image_format, dpi)
     
     # 防止CMD窗口一闪而过（仅在双击运行时有效）
-    # 已移除重复的sys导入，使用顶部已导入的sys模块
     if not getattr(sys, 'frozen', False):
         input("\n请按Enter键退出...")
